@@ -135,7 +135,7 @@ export const Contact = () => {
                 <div className="w-full h-80 rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
                   <iframe
                     title="Office Location"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.058368940082!2d72.84439167503837!3d19.06115395243884!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c923364f9f3f%3A0x6734d8d9b9308c1d!2sBandra%20Kurla%20Complex!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3136.196343219192!2d72.99864917423655!3d19.137237950049133!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c1006af0ab7d%3A0xaf63b3819480b1c!2sACS%20LAB%20EQUIPMENTS%20SALES%20%26%20SERVICES!5e1!3m2!1sen!2sin!4v1770988911056!5m2!1sen!2sin"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
@@ -145,6 +145,7 @@ export const Contact = () => {
                 </div>
               </div>
             </div>
+           
 
             {/* General Enquiry Form */}
             <div className="bg-industrial-dark p-8 md:p-12 rounded-3xl text-white shadow-2xl">
