@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSEO } from "../hooks/useSeo";
-import { Phone, Mail, MapPin, Send } from "lucide-react";
+import { Phone, Mail, MapPin, Send, Clock } from "lucide-react";
 import { StatusModal } from "../components/ui/StatusModal";
 
 export const Contact = () => {
@@ -114,6 +114,13 @@ export const Contact = () => {
                     <br />
                     support@acslabs.com
                   </p>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-industrial-primary">
+                    <Clock size={24} />
+                    <h3 className="font-bold text-slate-900">Mon to Sat</h3>
+                  </div>
+                  <p className="text-slate-600">9:30am to 6:00pm</p>
                 </div>
               </div>
 

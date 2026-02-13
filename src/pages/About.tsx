@@ -1,6 +1,6 @@
 import React from "react";
 import { useSEO } from "../hooks/useSeo";
-import { Award, Target, CheckCircle, Globe } from "lucide-react";
+import { Award, Target, Globe } from "lucide-react";
 
 export const About = () => {
   useSEO(

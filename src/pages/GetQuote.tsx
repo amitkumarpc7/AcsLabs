@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSEO } from "../hooks/useSeo";
 import { StatusModal } from "../components/ui/StatusModal";
-import { FileText, Send, ClipboardList } from "lucide-react";
+import { Send, ClipboardList } from "lucide-react";
 
 export const GetQuote = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
