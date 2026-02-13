@@ -7,10 +7,14 @@ import { About } from "./pages/About";
 import { Footer } from "./components/layout/Footer";
 import { Contact } from "./pages/Contact";
 import { GetQuote } from "./pages/GetQuote";
+import ScrollToTop from "./components/utils/ScrollToTop";
+import { BackToTop } from "./components/utils/BackToTop";
 
 export default function App() {
   return (
-    <div className="font-body">
+    <div className="font-body flex flex-col min-h-screen">
+      <ScrollToTop />
+      <BackToTop />
       <Navbar />
       <main className="flex-grow">
         <Routes>
