@@ -9,6 +9,7 @@ import { Contact } from "./pages/Contact";
 import { GetQuote } from "./pages/GetQuote";
 import ScrollToTop from "./components/utils/ScrollToTop";
 import { BackToTop } from "./components/utils/BackToTop";
+import { DevAdmin } from "./pages/DevAdmin";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/get-quote" element={<GetQuote />} />
+          <Route path="/dev-admin-portal" element={<DevAdmin />} />
         </Routes>
       </main>
 
