@@ -92,7 +92,7 @@ export const Contact = () => {
           <div className="grid lg:grid-cols-2 gap-16">
             {/* Contact Information & Map */}
             <div className="space-y-12">
-              <div className="grid sm:grid-cols-2 gap-8">
+              <div className="grid sm:grid-cols-3 gap-8">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-industrial-primary">
                     <Phone size={24} />
@@ -128,9 +128,7 @@ export const Contact = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-industrial-primary">
                   <MapPin size={24} />
-                  <h3 className="font-bold text-slate-900">
-                    Visit Our Factory
-                  </h3>
+                  <h3 className="font-bold text-slate-900">Visit Our Office</h3>
                 </div>
                 <div className="w-full h-80 rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
                   <iframe
@@ -145,7 +143,6 @@ export const Contact = () => {
                 </div>
               </div>
             </div>
-           
 
             {/* General Enquiry Form */}
             <div className="bg-industrial-dark p-8 md:p-12 rounded-3xl text-white shadow-2xl">
