@@ -1,4 +1,4 @@
-// import { useProducts } from "../hooks/useProduct";
+
 import { useSEO } from "../hooks/useSeo";
 import { ProductCard } from "../components/features/ProductCard";
 import { FilterSidebar } from "../components/features/FilterSidebar";
