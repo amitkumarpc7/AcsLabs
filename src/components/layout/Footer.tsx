@@ -120,7 +120,7 @@ export const Footer = () => {
                 />
                 <span>
                   123 Industrial Estate, Phase II, <br />
-                  Mumbai, Maharashtra 400001
+                  Rabale, Navi Mumbai, Maharashtra 400701
                 </span>
               </li>
               <li className="flex items-center gap-4">
@@ -138,13 +138,16 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm">
           <p>© 2026 AcsLabs Instruments Pvt. Ltd. All Rights Reserved.</p>
-          <div className="flex gap-8">
-            <a href="#" className="hover:text-white transition-colors">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Terms of Service
-            </a>
+          <div className="flex gap-8 items-center leading-none">
+            <p className="flex items-center transition-colors">
+              Designed and Developed by
+              <a
+                href="mailto:amitkpc11@gmail.com"
+                className="ml-2 flex items-center gap-2 hover:text-red-600 transition-colors"
+              >
+                <b>Amit Chaurasia</b>
+              </a>
+            </p>
           </div>
         </div>
       </div>
