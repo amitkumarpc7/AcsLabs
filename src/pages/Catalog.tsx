@@ -3,6 +3,7 @@ import { useSEO } from "../hooks/useSeo";
 import { ProductCard } from "../components/features/ProductCard";
 import { FilterSidebar } from "../components/features/FilterSidebar";
 import { Search } from "lucide-react";
+import { useProductss } from "../hooks/useProducts";
 
 export const Catalog = () => {
   const {

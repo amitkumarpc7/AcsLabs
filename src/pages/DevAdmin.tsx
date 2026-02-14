@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
+import { useProductss } from "../hooks/useProducts";
 import {
   collection,
   addDoc,
@@ -17,6 +18,7 @@ import {
   Lock,
   LogOut,
   ChevronDown,
+  Download,
 } from "lucide-react";
 
 export const DevAdmin = () => {
@@ -45,9 +47,12 @@ export const DevAdmin = () => {
   const [specs, setSpecs] = useState([{ key: "", value: "" }]);
   const [allProducts, setAllProducts] = useState<any[]>([]);
 
-  // --- CLOUDINARY CONFIG (Replace with your own) ---
-  const CLOUDINARY_UPLOAD_PRESET = "your_preset_name";
-  const CLOUDINARY_CLOUD_NAME = "your_cloud_name";
+  // --- DATA BACKUP FROM HOOK ---
+  const { downloadBackup } = useProductss();
+
+  // --- CLOUDINARY CONFIG FROM ENV ---
+  const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_PRESET;
+  const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 
   useEffect(() => {
     const auth = sessionStorage.getItem("admin_auth");
@@ -103,10 +108,13 @@ export const DevAdmin = () => {
       const data = await response.json();
       const imageUrl = data.secure_url;
 
+      if (!imageUrl)
+        throw new Error("Cloudinary upload failed. Check your preset.");
+
       // 2. Map specs to object
       const specsObject = specs.reduce(
         (acc, curr) => {
-          if (curr.key) acc[curr.key] = curr.value;
+          if (curr.key.trim()) acc[curr.key] = curr.value;
           return acc;
         },
         {} as Record<string, string>,
@@ -121,19 +129,23 @@ export const DevAdmin = () => {
       });
 
       alert("Success! Product deployed.");
-      setIsUploading(false);
+
+      // Reset everything
       setPreviewUrl(null);
       setImageFile(null);
       setForm({
-        ...form,
         name: "",
         slug: "",
+        category: "Cement & Concrete",
         shortDescription: "",
         fullDescription: "",
+        featured: false,
+        isNew: true,
       });
       setSpecs([{ key: "", value: "" }]);
     } catch (err) {
       alert("Upload failed: " + err);
+    } finally {
       setIsUploading(false);
     }
   };
@@ -150,20 +162,20 @@ export const DevAdmin = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-industrial-dark flex items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
         <form
           onSubmit={handleLogin}
           className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center"
         >
-          <Lock className="mx-auto mb-4 text-industrial-primary" size={40} />
+          <Lock className="mx-auto mb-4 text-blue-600" size={40} />
           <h2 className="text-2xl font-bold mb-6">Admin Login</h2>
           <input
             type="password"
-            className="w-full p-4 border rounded-xl mb-4 text-center tracking-widest outline-none focus:ring-2 focus:ring-industrial-primary"
+            className="w-full p-4 border rounded-xl mb-4 text-center tracking-widest outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="••••••••"
             onChange={(e) => setPassInput(e.target.value)}
           />
-          <button className="w-full bg-industrial-primary text-white py-4 rounded-xl font-bold">
+          <button className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition">
             Unlock
           </button>
         </form>
@@ -175,15 +187,23 @@ export const DevAdmin = () => {
     <div className="pt-28 pb-20 bg-slate-50 min-h-screen text-slate-900">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-industrial-dark uppercase tracking-tighter">
-            Internal <span className="text-industrial-primary">Dashboard</span>
+          <h1 className="text-3xl font-bold text-slate-800 uppercase tracking-tighter">
+            Internal <span className="text-blue-600">Dashboard</span>
           </h1>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 text-slate-500 hover:text-red-600 font-bold transition"
-          >
-            <LogOut size={18} /> Logout
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={downloadBackup}
+              className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-bold transition text-sm"
+            >
+              <Download size={18} /> Backup
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-slate-500 hover:text-red-600 font-bold transition text-sm"
+            >
+              <LogOut size={18} /> Logout
+            </button>
+          </div>
         </div>
 
         <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-200 mb-12">
@@ -191,14 +211,14 @@ export const DevAdmin = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <input
                 placeholder="Product Name"
-                className="p-3 border rounded-lg outline-none focus:ring-2 focus:ring-industrial-primary"
+                className="p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required
               />
               <input
                 placeholder="Slug (e.g. compression-tester)"
-                className="p-3 border rounded-lg outline-none focus:ring-2 focus:ring-industrial-primary"
+                className="p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.slug}
                 onChange={(e) => setForm({ ...form, slug: e.target.value })}
                 required
@@ -208,6 +228,7 @@ export const DevAdmin = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <select
                 className="p-3 border rounded-lg bg-white"
+                value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
               >
                 <option>Cement & Concrete</option>
@@ -217,7 +238,6 @@ export const DevAdmin = () => {
                 <option>Fluid Mechanics</option>
                 <option>Metal Testing</option>
               </select>
-
               <div className="relative">
                 <input
                   type="file"
@@ -228,22 +248,21 @@ export const DevAdmin = () => {
                 />
                 <label
                   htmlFor="img"
-                  className="flex items-center justify-center p-3 border-2 border-dashed rounded-lg cursor-pointer hover:bg-slate-50 gap-2 text-slate-500"
+                  className="flex items-center justify-center p-3 border-2 border-dashed rounded-lg cursor-pointer hover:bg-slate-50 gap-2 text-slate-500 font-semibold"
                 >
                   <UploadCloud size={20} />{" "}
-                  {imageFile ? "Image Selected" : "Upload Image"}
+                  {imageFile ? "Image Ready" : "Upload Image"}
                 </label>
               </div>
             </div>
 
             {previewUrl && (
-              <div className="relative rounded-xl overflow-hidden h-48 border">
+              <div className="relative rounded-xl overflow-hidden h-48 border bg-slate-100 flex items-center justify-center">
                 <img
                   src={previewUrl}
-                  className="w-full h-full object-cover"
+                  className="max-h-full object-contain"
                   alt="Preview"
                 />
-                <div className="absolute inset-0 bg-black/20" />
               </div>
             )}
 
@@ -276,7 +295,7 @@ export const DevAdmin = () => {
                 <button
                   type="button"
                   onClick={() => setSpecs([...specs, { key: "", value: "" }])}
-                  className="text-industrial-primary font-bold text-sm"
+                  className="text-blue-600 font-bold text-sm"
                 >
                   + Add
                 </button>
@@ -318,7 +337,7 @@ export const DevAdmin = () => {
 
             <button
               disabled={isUploading}
-              className="w-full bg-industrial-dark hover:bg-industrial-primary text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
+              className="w-full bg-slate-800 hover:bg-blue-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
             >
               {isUploading ? (
                 <>
@@ -335,18 +354,18 @@ export const DevAdmin = () => {
 
         <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-200">
           <h2 className="text-xl font-bold mb-6 text-slate-800 flex items-center gap-2">
-            <ChevronDown /> Existing Inventory ({allProducts.length})
+            <ChevronDown /> Inventory ({allProducts.length})
           </h2>
           <div className="grid gap-4">
             {allProducts.map((p) => (
               <div
                 key={p.id}
-                className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group"
+                className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100"
               >
                 <div className="flex items-center gap-4">
                   <img
                     src={p.image}
-                    className="w-12 h-12 rounded-lg object-cover shadow-sm"
+                    className="w-12 h-12 rounded-lg object-cover shadow-sm bg-white"
                     alt=""
                   />
                   <div>
