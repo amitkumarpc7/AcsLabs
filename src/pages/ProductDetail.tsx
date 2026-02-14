@@ -1,9 +1,11 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSEO } from "../hooks/useSeo";
+import { ChevronLeft } from "lucide-react";
 import { useProductss } from "../hooks/useProducts"; // Ensure path is correct
 
 export const ProductDetail = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
 
   // Use the combined list from the hook
   const { allProducts, loading } = useProductss();
@@ -34,6 +36,17 @@ export const ProductDetail = () => {
 
   return (
     <div className="pt-32 container mx-auto px-4 pb-20">
+      <div className="mb-8">
+        <button
+          onClick={() => navigate("/catalog")}
+          className="flex items-center gap-2 text-slate-500 hover:text-industrial-primary transition-colors font-bold uppercase text-xs tracking-widest group"
+        >
+          <div className="p-2 rounded-full bg-slate-100 group-hover:bg-industrial-primary group-hover:text-white transition-all">
+            <ChevronLeft size={18} />
+          </div>
+          Back to Catalog
+        </button>
+      </div>
       <div className="grid md:grid-cols-2 gap-12">
         <div className="relative group">
           <img
