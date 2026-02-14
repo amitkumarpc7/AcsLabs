@@ -16,7 +16,7 @@ export const ProductCard = ({
       <img
         src={product.image}
         alt={product.name}
-        className={`${isGrid ? "w-full aspect-square" : "w-48 h-48"} object-cover`}
+        className={`${isGrid ? "w-full aspect-square" : "w-48 h-48"} object-contain`}
       />
       <div className="p-5 flex flex-col justify-between">
         <div>
@@ -30,7 +30,9 @@ export const ProductCard = ({
         </div>
         <Link
           to={`/product/${product.slug}`}
-          className="mt-4 bg-industrial-primary text-white text-center py-2 rounded hover:bg-red-700 transition"
+          className={`mt-4 bg-industrial-primary text-white text-center py-2 px-6 rounded hover:bg-red-700 transition font-bold uppercase text-xs tracking-wider ${
+            isGrid ? "w-full" : "w-fit"
+          }`}
         >
           View Details
         </Link>

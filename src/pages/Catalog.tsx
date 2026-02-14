@@ -1,4 +1,4 @@
-import { useProducts } from "../hooks/useProduct";
+// import { useProducts } from "../hooks/useProduct";
 import { useSEO } from "../hooks/useSeo";
 import { ProductCard } from "../components/features/ProductCard";
 import { FilterSidebar } from "../components/features/FilterSidebar";
@@ -14,7 +14,7 @@ export const Catalog = () => {
     setSelectedCategory,
     viewMode,
     setViewMode,
-  } = useProducts();
+  } = useProductss();
   useSEO("Catalog", "Browse our complete range of testing equipment.");
 
   return (

@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
 import { db } from "../firebaseConfig";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { products as staticProducts } from "../data/product"; // Import your old static file
 import type { Product } from "../types";
 
 export const useProductss = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [firebaseProducts, setFirebaseProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -12,7 +13,6 @@ export const useProductss = () => {
 
   // Real-time listener for Firebase
   useEffect(() => {
-    // This listener automatically catches Cloudinary URLs saved in Firestore
     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
 
     const unsubscribe = onSnapshot(
@@ -23,7 +23,7 @@ export const useProductss = () => {
           ...doc.data(),
         })) as Product[];
 
-        setProducts(docs);
+        setFirebaseProducts(docs);
         setLoading(false);
       },
       (error: any) => {
@@ -35,13 +35,19 @@ export const useProductss = () => {
     return () => unsubscribe();
   }, []);
 
-  // --- HYBRID DATA BACKUP FEATURE ---
+  // --- MERGE LOGIC ---
+  // Combine Firebase products with static products into one master list
+  const combinedProducts = useMemo(() => {
+    return [...firebaseProducts, ...staticProducts];
+  }, [firebaseProducts]);
+
+  // Download Backup feature for your neighbor's data safety
   const downloadBackup = () => {
-    if (products.length === 0) return alert("No data to backup yet!");
+    if (combinedProducts.length === 0) return alert("No data to backup yet!");
 
     const dataStr =
       "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(products, null, 2));
+      encodeURIComponent(JSON.stringify(combinedProducts, null, 2));
     const downloadAnchorNode = document.createElement("a");
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute(
@@ -54,7 +60,7 @@ export const useProductss = () => {
   };
 
   const filteredProducts = useMemo(() => {
-    return products.filter((p) => {
+    return combinedProducts.filter((p) => {
       const matchSearch = p.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
@@ -62,7 +68,7 @@ export const useProductss = () => {
         selectedCategory === "All" || p.category === selectedCategory;
       return matchSearch && matchCat;
     });
-  }, [searchQuery, selectedCategory, products]);
+  }, [searchQuery, selectedCategory, combinedProducts]);
 
   return {
     searchQuery,
@@ -70,9 +76,10 @@ export const useProductss = () => {
     selectedCategory,
     setSelectedCategory,
     filteredProducts,
+    allProducts: combinedProducts, // CRITICAL: Use this in ProductDetail
     viewMode,
     setViewMode,
     loading,
-    downloadBackup, // Now available to your Admin or Catalog pages
+    downloadBackup,
   };
 };

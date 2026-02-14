@@ -9,6 +9,7 @@ import {
   deleteDoc,
   query,
   orderBy,
+  updateDoc,
 } from "firebase/firestore";
 import {
   Trash2,
@@ -19,6 +20,8 @@ import {
   LogOut,
   ChevronDown,
   Download,
+  Edit3,
+  X,
 } from "lucide-react";
 
 export const DevAdmin = () => {
@@ -28,6 +31,7 @@ export const DevAdmin = () => {
   const ADMIN_PASSWORD = "ACS_Admin_2026!";
 
   // --- PRODUCT FORM STATE ---
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     slug: "",
@@ -36,6 +40,7 @@ export const DevAdmin = () => {
     fullDescription: "",
     featured: false,
     isNew: true,
+    image: "",
   });
 
   // --- IMAGE & UPLOAD STATE ---
@@ -45,7 +50,7 @@ export const DevAdmin = () => {
 
   // --- SPECS & LIST STATE ---
   const [specs, setSpecs] = useState([{ key: "", value: "" }]);
-  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [firebaseProducts, setFirebaseProducts] = useState<any[]>([]);
 
   // --- DATA BACKUP FROM HOOK ---
   const { downloadBackup } = useProductss();
@@ -60,7 +65,9 @@ export const DevAdmin = () => {
 
     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setAllProducts(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
+      setFirebaseProducts(
+        snapshot.docs.map((d) => ({ id: d.id, ...d.data() })),
+      );
     });
     return () => unsubscribe();
   }, []);
@@ -88,30 +95,74 @@ export const DevAdmin = () => {
     }
   };
 
+  // Prepare data for editing
+  const startEdit = (product: any) => {
+    setEditingId(product.id);
+    setForm({
+      name: product.name,
+      slug: product.slug,
+      category: product.category,
+      shortDescription: product.shortDescription,
+      fullDescription: product.fullDescription,
+      featured: product.featured,
+      isNew: product.isNew,
+      image: product.image,
+    });
+    setPreviewUrl(product.image);
+    // Map specifications object back to key-value array for the form
+    const specsArray = Object.entries(product.specifications || {}).map(
+      ([key, value]) => ({
+        key,
+        value: value as string,
+      }),
+    );
+    setSpecs(specsArray.length > 0 ? specsArray : [{ key: "", value: "" }]);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm({
+      name: "",
+      slug: "",
+      category: "Cement & Concrete",
+      shortDescription: "",
+      fullDescription: "",
+      featured: false,
+      isNew: true,
+      image: "",
+    });
+    setSpecs([{ key: "", value: "" }]);
+    setPreviewUrl(null);
+    setImageFile(null);
+  };
+
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!imageFile) return alert("Please select an image first!");
-
     setIsUploading(true);
 
     try {
-      // 1. Upload to Cloudinary
-      const formData = new FormData();
-      formData.append("file", imageFile);
-      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+      let imageUrl = form.image;
 
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-        { method: "POST", body: formData },
-      );
+      // 1. Upload to Cloudinary if new file selected
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("file", imageFile);
+        formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
-      const data = await response.json();
-      const imageUrl = data.secure_url;
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+          { method: "POST", body: formData },
+        );
 
-      if (!imageUrl)
-        throw new Error("Cloudinary upload failed. Check your preset.");
+        const data = await response.json();
+        imageUrl = data.secure_url;
+        if (!imageUrl) throw new Error("Cloudinary upload failed.");
+      } else if (!editingId && !imageUrl) {
+        return alert("Please select an image first!");
+      }
 
-      // 2. Map specs to object
+      // 2. Map specs to object { Key: Value } to match static format
       const specsObject = specs.reduce(
         (acc, curr) => {
           if (curr.key.trim()) acc[curr.key] = curr.value;
@@ -120,31 +171,34 @@ export const DevAdmin = () => {
         {} as Record<string, string>,
       );
 
-      // 3. Save to Firestore
-      await addDoc(collection(db, "products"), {
-        ...form,
+      const productData = {
+        name: form.name,
+        slug: form.slug,
+        category: form.category,
+        shortDescription: form.shortDescription,
+        fullDescription: form.fullDescription,
+        featured: form.featured,
+        isNew: form.isNew,
         image: imageUrl,
         specifications: specsObject,
-        createdAt: new Date(),
-      });
+        updatedAt: new Date(),
+      };
 
-      alert("Success! Product deployed.");
+      // 3. Save or Update in Firestore
+      if (editingId) {
+        await updateDoc(doc(db, "products", editingId), productData);
+        alert("Product Updated!");
+      } else {
+        await addDoc(collection(db, "products"), {
+          ...productData,
+          createdAt: new Date(),
+        });
+        alert("Product Created!");
+      }
 
-      // Reset everything
-      setPreviewUrl(null);
-      setImageFile(null);
-      setForm({
-        name: "",
-        slug: "",
-        category: "Cement & Concrete",
-        shortDescription: "",
-        fullDescription: "",
-        featured: false,
-        isNew: true,
-      });
-      setSpecs([{ key: "", value: "" }]);
+      cancelEdit();
     } catch (err) {
-      alert("Upload failed: " + err);
+      alert("Error: " + err);
     } finally {
       setIsUploading(false);
     }
@@ -165,7 +219,7 @@ export const DevAdmin = () => {
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
         <form
           onSubmit={handleLogin}
-          className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center"
+          className="bg-white p-8 rounded-3xl shadow-2xl w-full max-sm text-center"
         >
           <Lock className="mx-auto mb-4 text-blue-600" size={40} />
           <h2 className="text-2xl font-bold mb-6">Admin Login</h2>
@@ -207,6 +261,20 @@ export const DevAdmin = () => {
         </div>
 
         <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-200 mb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-slate-700 uppercase tracking-tight">
+              {editingId ? "Edit Product" : "Upload New Product"}
+            </h2>
+            {editingId && (
+              <button
+                onClick={cancelEdit}
+                className="text-red-500 flex items-center gap-1 text-sm font-bold"
+              >
+                <X size={16} /> Cancel
+              </button>
+            )}
+          </div>
+
           <form onSubmit={handleUpload} className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               <input
@@ -217,7 +285,7 @@ export const DevAdmin = () => {
                 required
               />
               <input
-                placeholder="Slug (e.g. compression-tester)"
+                placeholder="Slug (e.g. digital-compression-machine)"
                 className="p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.slug}
                 onChange={(e) => setForm({ ...form, slug: e.target.value })}
@@ -251,7 +319,11 @@ export const DevAdmin = () => {
                   className="flex items-center justify-center p-3 border-2 border-dashed rounded-lg cursor-pointer hover:bg-slate-50 gap-2 text-slate-500 font-semibold"
                 >
                   <UploadCloud size={20} />{" "}
-                  {imageFile ? "Image Ready" : "Upload Image"}
+                  {imageFile
+                    ? "Image Ready"
+                    : editingId
+                      ? "Change Image"
+                      : "Upload Image"}
                 </label>
               </div>
             </div>
@@ -303,7 +375,7 @@ export const DevAdmin = () => {
               {specs.map((spec, i) => (
                 <div key={i} className="flex gap-2">
                   <input
-                    placeholder="Property"
+                    placeholder="Property (e.g. Capacity)"
                     className="flex-1 p-2 border rounded text-sm"
                     value={spec.key}
                     onChange={(e) => {
@@ -313,7 +385,7 @@ export const DevAdmin = () => {
                     }}
                   />
                   <input
-                    placeholder="Value"
+                    placeholder="Value (e.g. 2000 kN)"
                     className="flex-1 p-2 border rounded text-sm"
                     value={spec.value}
                     onChange={(e) => {
@@ -341,11 +413,12 @@ export const DevAdmin = () => {
             >
               {isUploading ? (
                 <>
-                  <Loader2 className="animate-spin" /> Uploading...
+                  <Loader2 className="animate-spin" /> Processing...
                 </>
               ) : (
                 <>
-                  <Send size={20} /> Deploy Product
+                  <Send size={20} />{" "}
+                  {editingId ? "Update Product" : "Deploy Product"}
                 </>
               )}
             </button>
@@ -353,14 +426,14 @@ export const DevAdmin = () => {
         </div>
 
         <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-200">
-          <h2 className="text-xl font-bold mb-6 text-slate-800 flex items-center gap-2">
-            <ChevronDown /> Inventory ({allProducts.length})
+          <h2 className="text-xl font-bold mb-6 text-slate-800 flex items-center gap-2 uppercase tracking-tighter">
+            <ChevronDown /> Cloud Inventory ({firebaseProducts.length})
           </h2>
           <div className="grid gap-4">
-            {allProducts.map((p) => (
+            {firebaseProducts.map((p) => (
               <div
                 key={p.id}
-                className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100"
+                className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-white transition-colors group"
               >
                 <div className="flex items-center gap-4">
                   <img
@@ -377,12 +450,20 @@ export const DevAdmin = () => {
                     </span>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleDelete(p.id)}
-                  className="p-2 text-slate-300 hover:text-red-500 transition-colors"
-                >
-                  <Trash2 size={20} />
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => startEdit(p)}
+                    className="p-2 text-slate-400 hover:text-blue-600 transition-colors"
+                  >
+                    <Edit3 size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(p.id)}
+                    className="p-2 text-slate-300 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
