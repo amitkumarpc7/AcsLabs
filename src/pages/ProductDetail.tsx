@@ -64,7 +64,7 @@ export const ProductDetail = () => {
 
         <div className="space-y-6">
           <div>
-            <span className="text-red-600 font-bold uppercase text-xs tracking-widest">
+            <span className="bg-red-600 text-slate-900 text-sm px-3.5 py-1.5 rounded-full font-semibold uppercase tracking-wide">
               {product.category}
             </span>
             <h1 className="text-4xl font-bold mt-2 text-slate-900 leading-tight">
@@ -72,35 +72,13 @@ export const ProductDetail = () => {
             </h1>
           </div>
 
-          <p className="text-slate-600 leading-relaxed text-lg">
-            {product.fullDescription}
-          </p>
-
           <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
-            <h3 className="font-bold mb-4 uppercase text-sm tracking-wider text-slate-700">
-              Technical Specifications
-            </h3>
-            {product.specifications &&
-              Object.entries(product.specifications).map(([k, v]) => (
-                <div
-                  key={k}
-                  className="flex justify-between border-b border-slate-200 py-3 last:border-0"
-                >
-                  <span className="text-slate-500 font-medium">{k}</span>
-                  <span className="font-bold text-slate-900">
-                    {v as string}
-                  </span>
-                </div>
-              ))}
-          </div>
-
-          <div className="bg-slate-900 p-8 rounded-2xl text-white shadow-xl">
-            <h3 className="text-xl font-bold mb-2">
-              Request an Official Quote
-            </h3>
-            <p className="text-slate-400 text-sm mb-6 uppercase tracking-tight font-semibold">
-              ACSLabs Industrial Equipment Services
+            <p className="text-slate-600 leading-relaxed text-lg">
+              {product.fullDescription}
             </p>
+          </div>
+          <div className="bg-industrial-dark p-8 rounded-xl text-white">
+            <h3 className="text-xl font-bold mb-4">Request Quote</h3>
             <iframe
               src="YOUR_GOOGLE_FORM_URL"
               className="w-full h-96 bg-white rounded-xl shadow-inner border-0"

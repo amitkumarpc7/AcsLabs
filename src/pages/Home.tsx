@@ -7,7 +7,7 @@ export const Home = () => {
 
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = "/catalogue.pdf";
+    link.href = "/Catalogue.pdf";
     link.download = "ACSLabs-Catalogue.pdf";
     document.body.appendChild(link);
     link.click();

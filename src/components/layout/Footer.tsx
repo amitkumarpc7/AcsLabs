@@ -85,6 +85,14 @@ export const Footer = () => {
                   <ArrowRight size={14} /> Get a Quote
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/contact"
+                  className="hover:text-industrial-primary transition-colors flex items-center gap-2"
+                >
+                  <ArrowRight size={14} /> Certifications
+                </Link>
+              </li>
             </ul>
           </div>
 
