@@ -32,19 +32,21 @@ export const ProductDetail = () => {
           alt={product.name}
         />
         <div className="space-y-6">
-          <h1 className="text-4xl font-bold">{product.name}</h1>
-          <p className="text-slate-600">{product.fullDescription}</p>
-          <div className="bg-slate-50 p-6 rounded-xl border">
-            <h3 className="font-bold mb-4 uppercase text-sm tracking-wider">
-              Specifications
-            </h3>
-            {Object.entries(product.specifications).map(([k, v]) => (
-              <div key={k} className="flex justify-between border-b py-2">
-                <span className="text-slate-500">{k}</span>
-                <span className="font-bold">{v}</span>
-              </div>
-            ))}
+          <div>
+            <span className="bg-red-600 text-slate-900 text-sm px-3.5 py-1.5 rounded-full font-semibold uppercase tracking-wide">
+              {product.category}
+            </span>
+            <h1 className="text-4xl font-bold mt-2 text-slate-900 leading-tight">
+              {product.name}
+            </h1>
           </div>
+
+          <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+            <p className="text-slate-600 leading-relaxed text-lg">
+              {product.fullDescription}
+            </p>
+          </div>
+
           <div className="bg-industrial-dark p-8 rounded-xl text-white">
             <h3 className="text-xl font-bold mb-4">Request Quote</h3>
             <iframe

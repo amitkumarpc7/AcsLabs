@@ -2,11 +2,14 @@ import type { Product } from "../types";
 
 export const categories: string[] = [
   "All",
-  "Cement & Concrete",
-  "Soil Testing",
   "Bitumen",
-  "Rock Testing",
-  "Fluid Mechanics",
+  "Cement & Concrete",
+  "Soil & Aggregate",
+  "Construction & Civil Site",
+  "Environment monitoring system",
+  "Highway, Railway and Runways",
+  "Building Material Mechanical Test",
+  "Building Material Chemical Test",
   "Metal Testing",
 ];
 
