@@ -20,6 +20,12 @@ export const Navbar = () => {
           <Link to="/catalog" className="hover:text-red-500">
             Products
           </Link>
+          <Link to="/clients" className="hover:text-red-500">
+            Clients
+          </Link>
+          <Link to="/certifications" className="hover:text-red-500">
+            Certifications
+          </Link>
           <Link to="/contact" className="hover:text-red-500">
             Contact
           </Link>
@@ -43,6 +49,12 @@ export const Navbar = () => {
           </Link>
           <Link to="/catalog" onClick={() => setOpen(false)}>
             Products
+          </Link>
+          <Link to="/clients" onClick={() => setOpen(false)}>
+            Clients
+          </Link>
+          <Link to="/certifications" onClick={() => setOpen(false)}>
+            Certifications
           </Link>
           <Link to="/contact" onClick={() => setOpen(false)}>
             Contact

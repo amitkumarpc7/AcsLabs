@@ -9,6 +9,8 @@ import { Contact } from "./pages/Contact";
 import { GetQuote } from "./pages/GetQuote";
 import ScrollToTop from "./components/utils/ScrollToTop";
 import { BackToTop } from "./components/utils/BackToTop";
+import { Clients } from "./pages/Clients";
+import { Certifications } from "./pages/Certifications";
 
 export default function App() {
   return (
@@ -24,6 +26,8 @@ export default function App() {
           <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/get-quote" element={<GetQuote />} />
+          <Route path="/clients" element={<Clients />} />
+          <Route path="/certifications" element={<Certifications />} />
         </Routes>
       </main>
 

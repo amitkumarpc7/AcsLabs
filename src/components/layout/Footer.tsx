@@ -87,7 +87,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/contact"
+                  to="/certifications"
                   className="hover:text-industrial-primary transition-colors flex items-center gap-2"
                 >
                   <ArrowRight size={14} /> Certifications

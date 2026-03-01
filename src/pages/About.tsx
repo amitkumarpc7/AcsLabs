@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useSEO } from "../hooks/useSeo";
-import { Award, Target, Globe } from "lucide-react";
+import { Award, Target, Globe, ChevronRight } from "lucide-react";
 
 export const About = () => {
   useSEO(
@@ -9,10 +10,10 @@ export const About = () => {
   );
 
   const stats = [
-    { label: "Years Experience", value: "25+" },
-    { label: "Instruments Sold", value: "10,000+" },
-    { label: "Global Clients", value: "500+" },
-    { label: "Certifications", value: "12" },
+    { label: "Years Experience", value: "25+", path: null },
+    { label: "Instruments Sold", value: "10,000+", path: "/catalog" },
+    { label: "Global Clients", value: "500+", path: "/clients" },
+    { label: "Certifications", value: "12", path: "/certifications" },
   ];
 
   return (
@@ -34,39 +35,55 @@ export const About = () => {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
-                <span className="w-2 h-8 bg-industrial-primary"></span>
-                Who We Are
-              </h2>
-              <div className="space-y-4 text-slate-600 leading-relaxed text-lg">
-                <p>
-                  Founded in the heart of the industrial zone, our company
-                  started with a simple mission: to provide material testing
-                  labs with instruments that never compromise on accuracy.
-                </p>
-                <p>
-                  Today, we are a leading manufacturer of civil engineering and
-                  laboratory testing equipment. Our products are used in
-                  mega-projects across the globe, from high-rise skyscrapers to
-                  critical infrastructure bridges.
-                </p>
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
+                  <span className="w-2 h-8 bg-industrial-primary"></span>
+                  Who We Are
+                </h2>
+                <div className="space-y-4 text-slate-600 leading-relaxed text-lg">
+                  <p>
+                    Founded in the heart of the industrial zone, our company
+                    started with a simple mission: to provide material testing
+                    labs with instruments that never compromise on accuracy.
+                  </p>
+                  <p>
+                    Today, we are a leading manufacturer of civil engineering
+                    and laboratory testing equipment. Our products are used in
+                    mega-projects across the globe, from high-rise skyscrapers
+                    to critical infrastructure bridges.
+                  </p>
+                </div>
               </div>
 
+              {/* STATS GRID WITH REDIRECTION */}
               <div className="grid grid-cols-2 gap-6 mt-10">
-                {stats.map((stat, i) => (
-                  <div
-                    key={i}
-                    className="border-l-4 border-industrial-primary pl-4"
-                  >
-                    <div className="text-3xl font-bold text-industrial-dark">
-                      {stat.value}
+                {stats.map((stat, i) => {
+                  const content = (
+                    <div className="h-full border-l-4 border-industrial-primary pl-4 py-2 transition-all duration-300 hover:bg-slate-50 hover:translate-x-1 group">
+                      <div className="text-3xl font-bold text-industrial-dark flex items-center gap-2">
+                        {stat.value}
+                        {stat.path && (
+                          <ChevronRight
+                            size={18}
+                            className="text-industrial-primary opacity-0 group-hover:opacity-100 transition-opacity"
+                          />
+                        )}
+                      </div>
+                      <div className="text-sm text-slate-500 uppercase font-bold tracking-wider">
+                        {stat.label}
+                      </div>
                     </div>
-                    <div className="text-sm text-slate-500 uppercase font-bold">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
+                  );
+
+                  return stat.path ? (
+                    <Link key={i} to={stat.path} className="block">
+                      {content}
+                    </Link>
+                  ) : (
+                    <div key={i}>{content}</div>
+                  );
+                })}
               </div>
             </div>
 
@@ -74,11 +91,13 @@ export const About = () => {
               <img
                 src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=800"
                 alt="Factory Floor"
-                className="rounded-2xl shadow-2xl"
+                className="rounded-[2.5rem] shadow-2xl border border-slate-100"
               />
-              <div className="absolute -bottom-6 -left-6 bg-industrial-primary text-white p-8 rounded-xl hidden lg:block">
-                <p className="text-xl font-bold italic">
-                  "Accuracy is not an option, it's our standard."
+              <div className="absolute -bottom-6 -left-6 bg-industrial-primary text-white p-8 rounded-2xl hidden lg:block shadow-xl">
+                <p className="text-xl font-bold italic leading-tight">
+                  "Accuracy is not an option,
+                  <br />
+                  it's our standard."
                 </p>
               </div>
             </div>
@@ -87,11 +106,13 @@ export const About = () => {
       </section>
 
       {/* Values Section */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-24 bg-slate-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-center text-4xl font-bold mb-16">
-            Our Core Values
-          </h2>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Our Core Values</h2>
+            <div className="w-20 h-1.5 bg-industrial-primary mx-auto rounded-full"></div>
+          </div>
+
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
@@ -107,18 +128,20 @@ export const About = () => {
               {
                 icon: <Globe className="text-industrial-primary" />,
                 title: "Support",
-                desc: "Global installation and 24/7 technical support for every client.",
+                desc: "Global installation and 24/7 technical support for every client worldwide.",
               },
             ].map((value, i) => (
               <div
                 key={i}
-                className="bg-white p-10 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition"
+                className="bg-white p-10 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-500 group"
               >
-                <div className="mb-6">
+                <div className="mb-6 p-4 bg-slate-50 rounded-2xl w-fit group-hover:bg-industrial-primary/10 transition-colors">
                   {React.cloneElement(value.icon, { size: 40 })}
                 </div>
-                <h3 className="text-xl font-bold mb-4">{value.title}</h3>
-                <p className="text-slate-500">{value.desc}</p>
+                <h3 className="text-2xl font-bold mb-4 text-slate-900">
+                  {value.title}
+                </h3>
+                <p className="text-slate-500 leading-relaxed">{value.desc}</p>
               </div>
             ))}
           </div>
